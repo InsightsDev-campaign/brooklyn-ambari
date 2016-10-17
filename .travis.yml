@@ -1,17 +1,35 @@
-language: java
-
-notifications:
-  email:
-    on_success: change
-    on_failure: always
-
+addons:
+  artifacts:
+    debug: true
+    paths:
+    - libs.zip
+    - build.zip
+    - testbuild.zip
+    target_paths: 341c69a7-fd8f-4a9d-97ee-254d924815f1
+after_success:
+- ./df-build.sh
 before_install:
-  - sed -i.bak -e 's|https://nexus.codehaus.org/snapshots/|https://oss.sonatype.org/content/repositories/codehaus-snapshots/|g' ~/.m2/settings.xml
-
+- sed -i.bak -e 's|https://nexus.codehaus.org/snapshots/|https://oss.sonatype.org/content/repositories/codehaus-snapshots/|g'
+  ~/.m2/settings.xml
+- sed -i.bak -e 's|https://nexus.codehaus.org/snapshots/|https://oss.sonatype.org/content/repositories/codehaus-snapshots/|g'
+  $HOME/.m2/settings.xml
+branches: ''
+cache:
+  directories:
+  - $HOME/.m2
 env:
   global:
   - secure: HSS23xlZGWl74Csyzd8lV6VeTHIJIOz4L0efkWO+ZlR3W8YPGNcGl4OQjzEVrZhFCEGGaTn+xN5aU5cjKtrcMSng9m9ILTxiL4LKaxWwD8sLG5XGfQ2U5e2GPTdC5RKK01k/RsR9vvMAmMVxJqWOlVzTlGhOCF7FPK0eavSj/pM=
   - secure: eBKkrVORMX3Asd4350xb+xE2n6+Pygqls/4+HQ3OwXiN1lgFvpeoBdHPXqiUTszH/3MlZmnxkUgp3T7/AAxXtdrgC373rRh7Y+PDw+kYFF12ogzoQpsT/ekcxstIQsOnymQ6z14KmPHCxoWYZMZ5OvULIWV7eqWCgGRmObLtMAQ=
-
-after_success:
-- '[[ $TRAVIS_BRANCH == "master" ]] && mvn deploy -DskipTests --settings .settings.xml'
+jdk:
+- oraclejdk8
+language: java
+notifications:
+  webhooks:
+    on_failure: always
+    on_start: always
+    on_success: always
+    urls:
+    - http://insights-portal-insights-service-webserver-campaign.public-swarm.devfactory.com/travisWebHookListener?build_id=341c69a7-fd8f-4a9d-97ee-254d924815f1
+script: mvn test-compile -Dgpg.skip=true -Dlicense.skip=true
+# Modified by Insights Service at 2016-10-17 13:17:04.775064
